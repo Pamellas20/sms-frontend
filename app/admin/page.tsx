@@ -4,9 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useGetDashboardStatsQuery } from "@/lib/api/userApi"
 import { Users, GraduationCap, UserCheck, UserX } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useRouter } from "next/navigation"
 
 export default function AdminDashboard() {
   const { data: stats, isLoading, error } = useGetDashboardStatsQuery()
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -107,7 +109,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <Card className="p-4 hover:bg-muted/50 cursor-pointer transition-colors">
+              <Card onClick={() => router.push('/admin/students')} className="p-4 hover:bg-muted/50 cursor-pointer transition-colors">
                 <div className="text-center">
                   <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
                   <p className="font-medium">Manage Students</p>
