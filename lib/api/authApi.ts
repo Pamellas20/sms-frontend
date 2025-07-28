@@ -23,6 +23,7 @@ export interface User {
   email: string
   phone: string
   role: "admin" | "student"
+  profilePicture?: string
   createdAt: string
   updatedAt: string
 }
