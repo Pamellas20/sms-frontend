@@ -10,8 +10,6 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "EduManage - Student Management System",
-  description: "A comprehensive student management system for educational institutions",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
