@@ -48,17 +48,17 @@ export default function ProfilePage() {
                     setCredentials({
                         user: {
                             ...result.user,
-                            _id: result.user._id ?? user._id, // Ensure _id is always a string
+                            _id: result.user._id ?? user._id,
                             createdAt: result.user.createdAt
                                 ? result.user.createdAt
                                 : user.createdAt
                                     ? user.createdAt
-                                    : "", // Ensure createdAt is always a string
+                                    : "",
                             updatedAt: result.user.updatedAt
                                 ? result.user.updatedAt
                                 : user.updatedAt
                                     ? user.updatedAt
-                                    : "", // Ensure updatedAt is always a string
+                                    : "",
                         },
                         token,
                     }),
@@ -107,23 +107,23 @@ export default function ProfilePage() {
 
         try {
             const result = await updateProfilePicture(formData).unwrap()
-
+            
             if (user && token) {
                 dispatch(
                     setCredentials({
                         user: {
                             ...result.user,
-                            _id: result.user._id ?? user._id, // Ensure _id is always a string
+                            _id: result.user._id ?? user._id,
                             createdAt: result.user.createdAt
                                 ? result.user.createdAt
                                 : user.createdAt
                                     ? user.createdAt
-                                    : "", // Ensure createdAt is always a string
+                                    : "",
                             updatedAt: result.user.updatedAt
                                 ? result.user.updatedAt
                                 : user.updatedAt
                                     ? user.updatedAt
-                                    : "", // Ensure updatedAt is always a string
+                                    : "",
                         },
                         token,
                     }),
@@ -161,7 +161,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-6">
-                {/* Profile Picture Section */}
+
                 <Card>
                     <CardHeader>
                         <CardTitle>Profile Picture</CardTitle>
@@ -190,7 +190,6 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                {/* Profile Information Section */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Profile Information</CardTitle>
@@ -255,7 +254,6 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                {/* Account Information */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Account Information</CardTitle>

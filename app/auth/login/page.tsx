@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import Link from "next/link"
@@ -12,14 +10,21 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { useLoginMutation } from "@/lib/api/authApi"
-import { setCredentials } from "@/lib/slices/authSlice"
+import { useGetProfileQuery } from "@/lib/api/authApi"
+import { setToken, setUser } from "@/lib/slices/authSlice"
 import { GraduationCap, Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const [login, { isLoading }] = useLoginMutation()
+  const [tempToken, setTempToken] = useState<string | null>(null)
+
+  const [login, { isLoading: isLoggingIn }] = useLoginMutation()
+  const { data: userProfile, isLoading: isFetchingProfile } = useGetProfileQuery(undefined, {
+    skip: !tempToken
+  })
+
   const dispatch = useDispatch()
   const router = useRouter()
   const { toast } = useToast()
@@ -30,31 +35,12 @@ export default function LoginPage() {
     try {
       const result = await login({ email, password }).unwrap()
 
-      // Decode JWT to get user info (in production, get from /auth/me endpoint)
-      const payload = JSON.parse(atob(result.token.split(".")[1]))
-      const user = {
-        _id: payload.id,
-        fullName: email.split("@")[0], // Temporary - should come from API
-        email,
-        phone: "",
-        role: payload.role,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }
+      // Store token temporarily to trigger profile fetch
+      setTempToken(result.token)
 
-      dispatch(setCredentials({ user, token: result.token }))
+      // Set token in Redux first so the profile query can use it
+      dispatch(setToken(result.token))
 
-      toast({
-        title: "Success",
-        description: "Logged in successfully!",
-      })
-
-      // Redirect based on role
-      if (payload.role === "admin") {
-        router.push("/admin")
-      } else {
-        router.push("/student")
-      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -63,6 +49,31 @@ export default function LoginPage() {
       })
     }
   }
+
+  // Handle profile fetch completion
+  React.useEffect(() => {
+    if (userProfile && tempToken) {
+      // Now set the complete user data with profile picture
+      dispatch(setUser(userProfile))
+
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+      })
+
+      // Redirect based on role
+      if (userProfile.role === "admin") {
+        router.push("/admin")
+      } else {
+        router.push("/student")
+      }
+
+      // Clear temp token
+      setTempToken(null)
+    }
+  }, [userProfile, tempToken, dispatch, router, toast])
+
+  const isLoading = isLoggingIn || isFetchingProfile
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
@@ -110,7 +121,7 @@ export default function LoginPage() {
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoggingIn ? "Signing in..." : isFetchingProfile ? "Loading profile..." : "Sign in"}
             </Button>
           </form>
           <div className="mt-6 text-center">

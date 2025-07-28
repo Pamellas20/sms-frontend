@@ -1,20 +1,5 @@
 import { baseApi } from "./baseApi"
-export enum UserRole {
-  Admin = "admin",
-  Student = "student",
-}
-
-export interface User {
-  _id?: string
-  fullName: string
-  email: string
-  phone: string
-  role: UserRole
-  password?: string
-  profilePicture?: string
-  createdAt?: string
-  updatedAt?: string
-}
+import type { User } from "./authApi"
 
 export interface DashboardStats {
   users: {
@@ -27,6 +12,15 @@ export interface DashboardStats {
     activeStudents: number
     graduatedStudents: number
     droppedStudents: number
+  }
+}
+
+export interface UserWithStudent extends User {
+  student?: {
+    _id: string
+    course: string
+    enrollmentYear: number
+    status: "Active" | "Graduated" | "Dropped"
   }
 }
 
@@ -52,7 +46,38 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Auth", "User"],
     }),
+    getAllStudents: builder.query<UserWithStudent[], void>({
+      query: () => "/user/students",
+      providesTags: ["User"],
+    }),
+    getUserById: builder.query<User, string>({
+      query: (id) => `/user/${id}`,
+      providesTags: ["User"],
+    }),
+    changeUserRole: builder.mutation<{ message: string; user: User }, { id: string; role: "admin" | "student" }>({
+      query: ({ id, role }) => ({
+        url: `/user/${id}/role`,
+        method: "PATCH",
+        body: { role },
+      }),
+      invalidatesTags: ["User", "Student"],
+    }),
+    deleteUser: builder.mutation<{ message: string }, string>({
+      query: (id) => ({
+        url: `/user/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["User", "Student"],
+    }),
   }),
 })
 
-export const { useGetDashboardStatsQuery, useUpdateProfileMutation, useUpdateProfilePictureMutation } = userApi
+export const {
+  useGetDashboardStatsQuery,
+  useUpdateProfileMutation,
+  useUpdateProfilePictureMutation,
+  useGetAllStudentsQuery,
+  useGetUserByIdQuery,
+  useChangeUserRoleMutation,
+  useDeleteUserMutation,
+} = userApi
