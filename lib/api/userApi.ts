@@ -15,6 +15,13 @@ export interface DashboardStats {
   }
 }
 
+export interface PaginatedUsersResponse {
+  users: UserWithStudent[]
+  total: number
+  page: number
+  totalPages: number
+}
+
 export interface UserWithStudent extends User {
   student?: {
     _id: string
@@ -50,6 +57,10 @@ export const userApi = baseApi.injectEndpoints({
       query: () => "/user/students",
       providesTags: ["User"],
     }),
+    getAllUsers: builder.query<PaginatedUsersResponse, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 10 }) => `/user?page=${page}&limit=${limit}`,
+      providesTags: ["User"],
+    }),
     getUserById: builder.query<User, string>({
       query: (id) => `/user/${id}`,
       providesTags: ["User"],
@@ -77,6 +88,7 @@ export const {
   useUpdateProfileMutation,
   useUpdateProfilePictureMutation,
   useGetAllStudentsQuery,
+  useGetAllUsersQuery,
   useGetUserByIdQuery,
   useChangeUserRoleMutation,
   useDeleteUserMutation,

@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { LayoutDashboard, Users, GraduationCap, Settings, BarChart3, Menu } from "lucide-react"
 
 const navigation = [
@@ -124,6 +124,7 @@ export function AdminSidebar() {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="p-0 w-64">
+                        <SheetTitle className="sr-only">Admin Side Bar</SheetTitle>
                         <SidebarContent onItemClick={handleClose} isMobile={true} />
                     </SheetContent>
                 </Sheet>
