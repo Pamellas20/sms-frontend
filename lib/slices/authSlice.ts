@@ -2,14 +2,22 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import type { User } from "../api/authApi"
 import { decodeJWT, isTokenExpired } from "../utils/jwt"
 
+
+interface UserWithStudentData extends User {
+  studentData?: {
+    course: string
+    enrollmentYear: number
+    status: "Active" | "Graduated" | "Dropped"
+  }
+}
+
 interface AuthState {
-  user: User | null
+  user: UserWithStudentData | null
   token: string | null
   isAuthenticated: boolean
   isLoading: boolean
 }
 
-// Initialize state from localStorage if available
 const getInitialState = (): AuthState => {
   if (typeof window === "undefined") {
     return {
@@ -33,7 +41,6 @@ const getInitialState = (): AuthState => {
         isLoading: false,
       }
     } catch (error) {
-      // Clear invalid data
       localStorage.removeItem("token")
       localStorage.removeItem("user")
     }
@@ -51,7 +58,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState: getInitialState(),
   reducers: {
-    setCredentials: (state, action: PayloadAction<{ user: User; token: string }>) => {
+    setCredentials: (state, action: PayloadAction<{ user: UserWithStudentData; token: string }>) => {
       const { user, token } = action.payload
 
       // Verify token is valid
@@ -70,11 +77,9 @@ const authSlice = createSlice({
         localStorage.setItem("user", JSON.stringify(user))
       }
     },
-    // New action to set token without user (for login flow)
     setToken: (state, action: PayloadAction<string>) => {
       const token = action.payload
 
-      // Verify token is valid
       const payload = decodeJWT(token)
       if (!payload || isTokenExpired(token)) {
         return
@@ -82,14 +87,13 @@ const authSlice = createSlice({
 
       state.token = token
       state.isAuthenticated = true
-      state.isLoading = true // Set loading to true while we fetch user profile
+      state.isLoading = true
 
       if (typeof window !== "undefined") {
         localStorage.setItem("token", token)
       }
     },
-    // New action to set user data (after profile fetch)
-    setUser: (state, action: PayloadAction<User>) => {
+    setUser: (state, action: PayloadAction<UserWithStudentData>) => {
       state.user = action.payload
       state.isLoading = false
 
@@ -97,10 +101,22 @@ const authSlice = createSlice({
         localStorage.setItem("user", JSON.stringify(action.payload))
       }
     },
-    updateUser: (state, action: PayloadAction<User>) => {
+    updateUser: (state, action: PayloadAction<UserWithStudentData>) => {
       state.user = action.payload
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(action.payload))
+      }
+    },
+    updateStudentData: (state, action: PayloadAction<{
+      course: string
+      enrollmentYear: number
+      status: "Active" | "Graduated" | "Dropped"
+    }>) => {
+      if (state.user) {
+        state.user.studentData = action.payload
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(state.user))
+        }
       }
     },
     logout: (state) => {
@@ -140,5 +156,14 @@ const authSlice = createSlice({
   },
 })
 
-export const { setCredentials, setToken, setUser, updateUser, logout, setLoading, initializeAuth } = authSlice.actions
+export const {
+  setCredentials,
+  setToken,
+  setUser,
+  updateUser,
+  updateStudentData,
+  logout,
+  setLoading,
+  initializeAuth
+} = authSlice.actions
 export default authSlice.reducer

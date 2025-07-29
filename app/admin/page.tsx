@@ -128,24 +128,6 @@ export default function AdminDashboard() {
                   </div>
                 </Card>
               </Link>
-              <Link href="/admin/analytics">
-                <Card className="p-4 hover:bg-muted/50 cursor-pointer transition-colors">
-                  <div className="text-center">
-                    <TrendingUp className="h-8 w-8 mx-auto mb-2 text-primary" />
-                    <p className="font-medium">Analytics</p>
-                    <p className="text-xs text-muted-foreground">Reports & Insights</p>
-                  </div>
-                </Card>
-              </Link>
-              <Link href="/admin/settings">
-                <Card className="p-4 hover:bg-muted/50 cursor-pointer transition-colors">
-                  <div className="text-center">
-                    <Calendar className="h-8 w-8 mx-auto mb-2 text-primary" />
-                    <p className="font-medium">Settings</p>
-                    <p className="text-xs text-muted-foreground">System Config</p>
-                  </div>
-                </Card>
-              </Link>
             </div>
           </CardContent>
         </Card>

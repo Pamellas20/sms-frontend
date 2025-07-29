@@ -119,10 +119,6 @@ export default function StudentsPage() {
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">Students Management</h1>
           <p className="text-muted-foreground">Manage student records and academic information</p>
         </div>
-        <Button className="w-full sm:w-auto">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Student
-        </Button>
       </div>
 
       {/* Filters and Search */}

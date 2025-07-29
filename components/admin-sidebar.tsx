@@ -6,14 +6,12 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { LayoutDashboard, Users, GraduationCap, Settings, BarChart3, Menu, X } from "lucide-react"
+import { LayoutDashboard, Users, GraduationCap, Settings, BarChart3, Menu } from "lucide-react"
 
 const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "User Management", href: "/admin/users", icon: Users },
     { name: "Students", href: "/admin/students", icon: GraduationCap },
-    { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
 ]
 
 interface SidebarContentProps {
@@ -27,16 +25,9 @@ function SidebarContent({ onItemClick, isMobile = false }: SidebarContentProps) 
     return (
         <div className="flex flex-col h-full bg-white dark:bg-gray-800">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Admin Panel</h2>
-                        <p className="text-sm text-muted-foreground mt-1">Management Dashboard</p>
-                    </div>
-                    {isMobile && (
-                        <Button variant="ghost" size="icon" onClick={onItemClick}>
-                            <X className="h-5 w-5" />
-                        </Button>
-                    )}
+                <div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Admin Panel</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Management Dashboard</p>
                 </div>
             </div>
             <nav className="flex-1 p-4 overflow-y-auto">
@@ -87,8 +78,7 @@ export function AdminSidebar() {
         setIsMounted(true)
     }, [])
 
-    const handleClose: () => void = () => setIsOpen(false)
-
+    const handleClose = () => setIsOpen(false)
 
     if (!isMounted) {
         return (
@@ -134,14 +124,14 @@ export function AdminSidebar() {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="p-0 w-64">
-                        <SheetTitle className="sr-only">Admin Navigation</SheetTitle>
+                        <SheetTitle className="sr-only">Admin Side Bar</SheetTitle>
                         <SidebarContent onItemClick={handleClose} isMobile={true} />
                     </SheetContent>
                 </Sheet>
             </div>
 
             {/* Desktop Sidebar - positioned below navbar */}
-            <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:top-16 lg:bg-white lg:dark:bg-gray-800 lg:shadow-lg lg:z-30">
+            <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:top-16 lg:bottom-0 lg:bg-white lg:dark:bg-gray-800 lg:shadow-lg lg:z-30">
                 <SidebarContent />
             </div>
         </>
