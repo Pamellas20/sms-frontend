@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useSelector } from "react-redux"
+import { useState, useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,25 +9,38 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { useUpdateOwnStudentDataMutation } from "@/lib/api/studentApi"
+import { updateStudentData } from "@/lib/slices/authSlice"
 import type { RootState } from "@/lib/store"
 import { User, Mail, Phone, Calendar, BookOpen, Edit, Save, GraduationCap, Activity } from "lucide-react"
 
 export default function StudentDashboard() {
   const { user } = useSelector((state: RootState) => state.auth)
+  const dispatch = useDispatch()
   const { toast } = useToast()
   const [updateOwnStudentData, { isLoading }] = useUpdateOwnStudentDataMutation()
 
   const [isEditing, setIsEditing] = useState(false)
   type StatusType = "Active" | "Graduated" | "Dropped"
+
   const [formData, setFormData] = useState<{
     course: string
     enrollmentYear: number
     status: StatusType
   }>({
-    course: "Computer Science", // This should come from actual student data
-    enrollmentYear: 2023,
-    status: "Active",
+    course: user?.studentData?.course || "Computer Science",
+    enrollmentYear: user?.studentData?.enrollmentYear || 2023,
+    status: user?.studentData?.status || "Active",
   })
+
+  useEffect(() => {
+    if (user?.studentData) {
+      setFormData({
+        course: user.studentData.course,
+        enrollmentYear: user.studentData.enrollmentYear,
+        status: user.studentData.status,
+      })
+    }
+  }, [user?.studentData])
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData((prev) => ({
@@ -38,7 +51,10 @@ export default function StudentDashboard() {
 
   const handleSave = async () => {
     try {
-      await updateOwnStudentData(formData).unwrap()
+      const result = await updateOwnStudentData(formData).unwrap()
+
+      dispatch(updateStudentData(formData))
+
       setIsEditing(false)
       toast({
         title: "Success",
