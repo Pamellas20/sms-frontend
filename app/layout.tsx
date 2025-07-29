@@ -23,7 +23,8 @@ export default function RootLayout({
         <Providers>
           <div className="min-h-screen bg-background">
             <Navbar />
-            <main>{children}</main>
+            {/* Add top padding to account for fixed navbar */}
+            <main className="pt-16">{children}</main>
             <Toaster />
           </div>
         </Providers>
